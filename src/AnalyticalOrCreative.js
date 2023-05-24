@@ -95,7 +95,7 @@ const TeachableMachine = () => {
         <ul>
           {predictions.map((pred, index) => (
             <li key={index}>
-              {`${pred.className}: ${pred.probability.toFixed(4)}`}
+              {`${pred.className}: ${(pred.probability * 100).toFixed(2)}%`}
             </li>
           ))}
         </ul>
