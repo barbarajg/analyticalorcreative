@@ -51,29 +51,41 @@ const TeachableMachine = () => {
     }
   }, [model]);
 
-  const classifyImage = async () => {
-    if (!model) {
-      return;
+  useEffect(() => {
+    let intervalId;
+
+    const classifyContinuous = async () => {
+      if (!model) {
+        return;
+      }
+
+      try {
+        const imageCapture = new ImageCapture(webcamRef.current.srcObject.getVideoTracks()[0]);
+
+        const bitmap = await imageCapture.grabFrame();
+        const predictions = await model.predict(bitmap);
+
+        console.log(predictions);
+        setPredictions(predictions);
+
+        const topPrediction = predictions.reduce((prev, current) => {
+          return prev.probability > current.probability ? prev : current;
+        });
+
+        setPrediction(topPrediction.className);
+      } catch (error) {
+        console.error('Error capturing frame:', error);
+      }
+    };
+
+    if (model) {
+      intervalId = setInterval(classifyContinuous, 1000); // Change the interval time (in milliseconds) as needed
     }
 
-    try {
-      const imageCapture = new ImageCapture(webcamRef.current.srcObject.getVideoTracks()[0]);
-
-      const bitmap = await imageCapture.grabFrame();
-      const predictions = await model.predict(bitmap);
-
-      console.log(predictions);
-      setPredictions(predictions);
-
-      const topPrediction = predictions.reduce((prev, current) => {
-        return prev.probability > current.probability ? prev : current;
-      });
-
-      setPrediction(topPrediction.className);
-    } catch (error) {
-      console.error('Error capturing frame:', error);
-    }
-  };
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [model]);
 
   const clearPrediction = () => {
     setPrediction('');
@@ -84,7 +96,6 @@ const TeachableMachine = () => {
     <div className={styles.Main}>
       <h1>Teachable Machine Demo</h1>
       <div>
-        <button onClick={classifyImage}>Classify Image</button>
         <button onClick={clearPrediction}>Clear</button>
       </div>
       <div>
