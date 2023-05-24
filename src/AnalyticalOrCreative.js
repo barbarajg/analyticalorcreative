@@ -5,6 +5,7 @@ import styles from './styles/Main.module.css';
 const TeachableMachine = () => {
   const webcamRef = useRef(null);
   const [model, setModel] = useState(null);
+  const [predictions, setPredictions] = useState([]);
   const [prediction, setPrediction] = useState('');
   const [stream, setStream] = useState(null);
 
@@ -61,10 +62,12 @@ const TeachableMachine = () => {
       const bitmap = await imageCapture.grabFrame();
       const predictions = await model.predict(bitmap);
 
+      console.log(predictions);
+      setPredictions(predictions);
+
       const topPrediction = predictions.reduce((prev, current) => {
         return prev.probability > current.probability ? prev : current;
       });
-      console.log(predictions);
 
       setPrediction(topPrediction.className);
     } catch (error) {
@@ -74,10 +77,11 @@ const TeachableMachine = () => {
 
   const clearPrediction = () => {
     setPrediction('');
+    setPredictions([]);
   };
 
   return (
-    <div className = {styles.Main}>
+    <div className={styles.Main}>
       <h1>Teachable Machine Demo</h1>
       <div>
         <button onClick={classifyImage}>Classify Image</button>
@@ -88,6 +92,13 @@ const TeachableMachine = () => {
       </div>
       <div>
         <h2>Prediction: {prediction}</h2>
+        <ul>
+          {predictions.map((pred, index) => (
+            <li key={index}>
+              {`${pred.className}: ${pred.probability.toFixed(4)}`}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
