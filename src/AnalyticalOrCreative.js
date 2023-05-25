@@ -52,7 +52,7 @@ const TeachableMachine = () => {
     }
   }, [model, modelLoaded]);
 
-  const classifyContinuous = async () => {
+  const classify = async () => {
     if (!model) {
       return;
     }
@@ -85,8 +85,8 @@ const TeachableMachine = () => {
     let intervalId;
 
     if (detecting && modelLoaded) {
-      classifyContinuous();
-      intervalId = setInterval(classifyContinuous, 1000);
+      classify();
+      intervalId = setInterval(classify, 1000);
     } else {
       clearInterval(intervalId);
     }
@@ -108,7 +108,7 @@ const TeachableMachine = () => {
 
   useEffect(() => {
     if (detecting && modelLoaded) {
-      classifyContinuous();
+      classify();
     }
   }, [detecting, modelLoaded]);
 
