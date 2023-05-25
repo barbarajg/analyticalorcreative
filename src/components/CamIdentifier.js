@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as tmImage from '@teachablemachine/image';
 import styles from '../styles/Main.module.css';
+import DetectionButtons from './DetectionButtons';
+import Results from './Results';
 
 const CamIdentifier = () => {
   const webcamRef = useRef(null); // Create a reference for the webcam video element
@@ -11,6 +13,7 @@ const CamIdentifier = () => {
   const [modelLoaded, setModelLoaded] = useState(false); // State to track if the model is loaded
 
   useEffect(() => {
+    // Load the Teachable Machine model on component mount
     const loadModel = async () => {
       const modelURL = 'https://teachablemachine.withgoogle.com/models/SRyopUQdy/model.json';
       const metadataURL = 'https://teachablemachine.withgoogle.com/models/SRyopUQdy/metadata.json';
@@ -28,6 +31,7 @@ const CamIdentifier = () => {
   }, []);
 
   useEffect(() => {
+    // Start the video stream on component mount
     const startVideo = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -51,6 +55,7 @@ const CamIdentifier = () => {
   }, [model, modelLoaded]);
 
   const classify = async () => {
+    // Perform image classification using the loaded model
     if (!model) {
       return; // If the model is not loaded, exit the function
     }
@@ -79,6 +84,7 @@ const CamIdentifier = () => {
   };
 
   useEffect(() => {
+    // Start or stop the classification process based on the detecting and modelLoaded states
     let intervalId;
 
     const startClassification = () => {
@@ -108,8 +114,9 @@ const CamIdentifier = () => {
   };
 
   useEffect(() => {
+    // Perform classification when detecting is true and model is loaded
     if (detecting && modelLoaded) {
-      classify(); // Perform classification when detecting is true and model is loaded
+      classify();
     }
   }, [detecting, modelLoaded]);
 
@@ -118,22 +125,12 @@ const CamIdentifier = () => {
       <div>
         <video ref={webcamRef} autoPlay playsInline muted width={480} height={360} />
       </div>
-      <div>
-        <button onClick={toggleDetection}>
-          {detecting ? 'Stop' : 'Detect'}
-        </button>
-        <button onClick={clearPrediction} disabled={!detecting}>Clear</button>
-      </div>
-      <div>
-        <h2>Prediction: {prediction}</h2>
-        <ul>
-          {predictions.map((pred, index) => (
-            <li key={index}>
-              {`${pred.className}: ${(pred.probability * 100).toFixed(2)}%`}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <DetectionButtons
+        detecting={detecting}
+        toggleDetection={toggleDetection}
+        clearPrediction={clearPrediction}
+      />
+      <Results prediction={prediction} predictions={predictions} />
     </div>
   );
 };
