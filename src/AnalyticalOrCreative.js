@@ -12,9 +12,8 @@ const TeachableMachine = () => {
 
   useEffect(() => {
     const loadModel = async () => {
-      const URL = 'https://teachablemachine.withgoogle.com/models/SRyopUQdy/';
-      const modelURL = `${URL}model.json`;
-      const metadataURL = `${URL}metadata.json`;
+      const modelURL = 'https://teachablemachine.withgoogle.com/models/SRyopUQdy/model.json';
+      const metadataURL = 'https://teachablemachine.withgoogle.com/models/SRyopUQdy/metadata.json';
 
       try {
         const loadedModel = await tmImage.load(modelURL, metadataURL);
@@ -29,22 +28,20 @@ const TeachableMachine = () => {
   }, []);
 
   useEffect(() => {
+    const startVideo = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        webcamRef.current.srcObject = stream;
+        webcamRef.current.addEventListener('loadedmetadata', () => {
+          webcamRef.current.play();
+        });
+      } catch (error) {
+        console.error('Error accessing webcam:', error);
+      }
+    };
+
     if (webcamRef.current && model && modelLoaded) {
-      const video = webcamRef.current;
-
-      const startVideo = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          video.srcObject = stream;
-          video.addEventListener('loadedmetadata', () => {
-            video.play();
-          });
-        } catch (error) {
-          console.error('Error accessing webcam:', error);
-        }
-      };
-
-      video.addEventListener('error', (event) => {
+      webcamRef.current.addEventListener('error', (event) => {
         console.error('Video playback error:', event.target.error);
       });
 
@@ -64,16 +61,15 @@ const TeachableMachine = () => {
       }
 
       const imageCapture = new ImageCapture(videoTracks[0]);
-
       const bitmap = await imageCapture.grabFrame();
       const predictions = await model.predict(bitmap);
 
       console.log(predictions);
       setPredictions(predictions);
 
-      const topPrediction = predictions.reduce((prev, current) => {
-        return prev.probability > current.probability ? prev : current;
-      });
+      const topPrediction = predictions.reduce((prev, current) =>
+        prev.probability > current.probability ? prev : current
+      );
 
       setPrediction(topPrediction.className);
     } catch (error) {
@@ -84,9 +80,13 @@ const TeachableMachine = () => {
   useEffect(() => {
     let intervalId;
 
-    if (detecting && modelLoaded) {
+    const startClassification = () => {
       classify();
       intervalId = setInterval(classify, 1000);
+    };
+
+    if (detecting && modelLoaded) {
+      startClassification();
     } else {
       clearInterval(intervalId);
     }
