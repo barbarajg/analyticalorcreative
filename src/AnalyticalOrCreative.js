@@ -7,7 +7,8 @@ const TeachableMachine = () => {
   const [model, setModel] = useState(null);
   const [predictions, setPredictions] = useState([]);
   const [prediction, setPrediction] = useState('');
-  const [stream, setStream] = useState(null);
+  const [detecting, setDetecting] = useState(true);
+  const [modelLoaded, setModelLoaded] = useState(false);
 
   useEffect(() => {
     const loadModel = async () => {
@@ -18,6 +19,7 @@ const TeachableMachine = () => {
       try {
         const loadedModel = await tmImage.load(modelURL, metadataURL);
         setModel(loadedModel);
+        setModelLoaded(true);
       } catch (error) {
         console.error('Error loading model:', error);
       }
@@ -27,7 +29,7 @@ const TeachableMachine = () => {
   }, []);
 
   useEffect(() => {
-    if (webcamRef.current && model) {
+    if (webcamRef.current && model && modelLoaded) {
       const video = webcamRef.current;
 
       const startVideo = async () => {
@@ -37,7 +39,6 @@ const TeachableMachine = () => {
           video.addEventListener('loadedmetadata', () => {
             video.play();
           });
-          setStream(stream);
         } catch (error) {
           console.error('Error accessing webcam:', error);
         }
@@ -49,53 +50,75 @@ const TeachableMachine = () => {
 
       startVideo();
     }
-  }, [model]);
+  }, [model, modelLoaded]);
+
+  const classifyContinuous = async () => {
+    if (!model) {
+      return;
+    }
+
+    try {
+      const videoTracks = webcamRef.current?.srcObject?.getVideoTracks();
+      if (!videoTracks || videoTracks.length === 0) {
+        throw new Error('No video tracks available');
+      }
+
+      const imageCapture = new ImageCapture(videoTracks[0]);
+
+      const bitmap = await imageCapture.grabFrame();
+      const predictions = await model.predict(bitmap);
+
+      console.log(predictions);
+      setPredictions(predictions);
+
+      const topPrediction = predictions.reduce((prev, current) => {
+        return prev.probability > current.probability ? prev : current;
+      });
+
+      setPrediction(topPrediction.className);
+    } catch (error) {
+      console.error('Error capturing frame:', error);
+    }
+  };
 
   useEffect(() => {
     let intervalId;
 
-    const classifyContinuous = async () => {
-      if (!model) {
-        return;
-      }
-
-      try {
-        const imageCapture = new ImageCapture(webcamRef.current.srcObject.getVideoTracks()[0]);
-
-        const bitmap = await imageCapture.grabFrame();
-        const predictions = await model.predict(bitmap);
-
-        console.log(predictions);
-        setPredictions(predictions);
-
-        const topPrediction = predictions.reduce((prev, current) => {
-          return prev.probability > current.probability ? prev : current;
-        });
-
-        setPrediction(topPrediction.className);
-      } catch (error) {
-        console.error('Error capturing frame:', error);
-      }
-    };
-
-    if (model) {
-      intervalId = setInterval(classifyContinuous, 1000); // Change the interval time (in milliseconds) as needed
+    if (detecting && modelLoaded) {
+      classifyContinuous();
+      intervalId = setInterval(classifyContinuous, 1000);
+    } else {
+      clearInterval(intervalId);
     }
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [model]);
+  }, [detecting, modelLoaded]);
+
+  const toggleDetection = () => {
+    setDetecting((prevState) => !prevState);
+  };
 
   const clearPrediction = () => {
     setPrediction('');
     setPredictions([]);
+    setDetecting(false);
   };
+
+  useEffect(() => {
+    if (detecting && modelLoaded) {
+      classifyContinuous();
+    }
+  }, [detecting, modelLoaded]);
 
   return (
     <div className={styles.Main}>
       <h1>Teachable Machine Demo</h1>
       <div>
+        <button onClick={toggleDetection}>
+          {detecting ? 'Stop' : 'Detect'}
+        </button>
         <button onClick={clearPrediction}>Clear</button>
       </div>
       <div>
