@@ -119,7 +119,7 @@ const TeachableMachine = () => {
         <button onClick={toggleDetection}>
           {detecting ? 'Stop' : 'Detect'}
         </button>
-        <button onClick={clearPrediction}>Clear</button>
+        <button onClick={clearPrediction} disabled={!detecting}>Clear</button>
       </div>
       <div>
         <video ref={webcamRef} autoPlay playsInline muted width={480} height={360} />
