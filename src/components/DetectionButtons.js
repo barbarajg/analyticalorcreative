@@ -1,12 +1,13 @@
 import React from 'react';
+import styles from '../styles/buttons.module.css';
 
 const DetectionButtons = ({ detecting, toggleDetection, clearPrediction }) => {
   return (
-    <div>
-      <button onClick={toggleDetection}>
+    <div className={styles.buttonContainer}>
+      <button className={styles.buttonCyan} onClick={toggleDetection}>
         {detecting ? 'Stop' : 'Detect'}
       </button>
-      <button onClick={clearPrediction} disabled={!detecting}>
+      <button className={styles.buttonCyan} onClick={clearPrediction} disabled={!detecting}>
         Clear
       </button>
     </div>

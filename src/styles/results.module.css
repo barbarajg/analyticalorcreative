@@ -1,0 +1,11 @@
+.resultsContainer {
+    display: flex;
+    flex-direction: column;
+    width: clamp(60vw,75vw,85vw);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin:0;
+    padding: 0px;
+    /* border: 1px solid white; */
+}

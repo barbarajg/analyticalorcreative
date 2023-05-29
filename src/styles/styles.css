@@ -1,3 +1,18 @@
 body {
-    background-color: green;
+    background-color: #142131;   
+}
+
+.main {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+    /* border: 1px solid black; */
+    background-color: #142131;
+    color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 20px 0 20px 0;
+    font-size: 150%;
+    justify-items: center;
+    font-family: 'Rubik', sans-serif;
 }

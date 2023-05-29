@@ -1,5 +1,29 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .Main {
-    background-color: aqua;
+    display: flex;
+    flex-direction: column;
+    /* width: clamp(90vw, 50vw, 60vw); */
+    /* background-color: #54b8b1; */
+    background-color: #142131; 
     margin: 0px;
     padding: 0px;
+    align-items: center;
+    padding: 10px;
+    text-align: center;
+}
+
+.cam {
+    border-radius: 20px;
+    /* width: clamp(240px,480px,960px); */
+    /* width: clamp(40vw, 60vw, 70vw); */
+    /* width: 60vw; */
+    /* min-width: 40vw; */
+    /* max-width: 70vw; */
+    width: 80%;
+    /* width: 70vw; */
 }

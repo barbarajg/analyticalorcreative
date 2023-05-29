@@ -1,0 +1,39 @@
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    /* width: clamp(240px,480px,960px); */
+    justify-content: center;
+    width: 100%;
+    /* background-color: antiquewhite; */
+    margin-top: 0.4em;
+}
+
+.buttonCyan {
+    background-color: #54b8b1;
+    display:inline-block;
+    padding:0.3em 1.8em;
+    margin:0 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.1em;
+    font-weight:bold;
+    text-align:center;
+    transition: all 0.2s;
+    color: #142131;
+    border: transparent;
+}
+
+.buttonCyan:hover {
+    background-color: #4c7d79;
+}
+
+@media all and (max-width:30em){
+    .buttonCyan{
+        display:block;
+        margin:0.1em auto;        
+        padding: 0.4em;
+        font-size: 0.8em;
+    }
+}

@@ -123,7 +123,7 @@ const CamIdentifier = () => {
   return (
     <div className={styles.Main}>
       <div>
-        <video ref={webcamRef} autoPlay playsInline muted width={480} height={360} />
+        <video className={styles.cam} ref={webcamRef} autoPlay playsInline muted />
       </div>
       <DetectionButtons
         detecting={detecting}

@@ -1,16 +1,15 @@
 import React from 'react';
+import styles from '../styles/results.module.css';
 
 const Results = ({ prediction, predictions }) => {
   return (
-    <div>
+    <div className={styles.resultsContainer}>
       <h2>Prediction: {prediction}</h2>
-      <ul>
-        {predictions.map((pred, index) => (
-          <li key={index}>
-            {`${pred.className}: ${(pred.probability * 100).toFixed(2)}%`}
-          </li>
-        ))}
-      </ul>
+      {predictions.map((pred, index) => (
+        <a key={index}>
+          {`${pred.className}: ${(pred.probability * 100).toFixed(2)}%`}
+        </a>
+      ))}
     </div>
   );
 };

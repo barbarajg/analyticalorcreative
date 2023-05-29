@@ -1,0 +1,20 @@
+.headerContainer {
+    display: flex;
+    flex-direction: column;
+    width: clamp(60vw,75vw,85vw);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin:0;
+    padding: 0px;
+}
+
+h1 {
+    margin-bottom: 0.6em;
+}
+
+h4 {
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+    font-weight: 300;
+}
